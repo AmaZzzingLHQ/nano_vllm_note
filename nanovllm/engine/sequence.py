@@ -33,7 +33,8 @@ class Sequence:
 
     def __getitem__(self, key):
         return self.token_ids[key]  # 支持下标访问 token
-
+    # property 装饰器，将方法转换为只读属性
+    # 即可以通过 sequence.is_finished 访问，而不是调用 sequence.is_finished()
     @property
     def is_finished(self):
         return self.status == SequenceStatus.FINISHED  # 判断序列是否已完成

@@ -29,7 +29,8 @@ class BlockManager:
     BlockManager 负责管理 KV 缓存中的 block 单元，实现 block 的分配、回收、哈希查找和缓存复用。
     支持高效的 KV cache 复用和 LLM 推理中的缓存管理。
     """
-
+    #  num_blocks 是根据实际的显存大小在Model_runner->allocate_kv_cache初始化时计算到的（4060 16G算出来 447）
+    #  block_size 是每个 block 可以存储的 token 数，config中定的 当前是 256
     def __init__(self, num_blocks: int, block_size: int):
         assert num_blocks > 0
         self.block_size = block_size  # 每个 block 的 token 数

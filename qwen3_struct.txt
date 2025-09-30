@@ -1,0 +1,499 @@
+正在从 /opt/llm/Qwen3-0.6B/ 加载Qwen3模型...
+模型加载成功！
+
+=== Qwen3模型结构分析 ===
+模型名称: /opt/llm/Qwen3-0.6B/
+模型类型: Qwen3ForCausalLM
+设备: cuda:0
+
+=== 模型配置详情 ===
++-------------------------+---------------+
+|          配置项         |       值      |
++-------------------------+---------------+
+|        vocab_size       |     151936    |
+|       hidden_size       |      1024     |
+|    num_hidden_layers    |       28      |
+|   num_attention_heads   |       16      |
+|   num_key_value_heads   |       8       |
+|    intermediate_size    |      3072     |
+| max_position_embeddings |     40960     |
+|       rms_norm_eps      |     1e-06     |
+|        rope_theta       |    1000000    |
+|       torch_dtype       | torch.float16 |
++-------------------------+---------------+
+
+=== 模型参数统计 ===
++-------+--------------------------+---------+
+|  组件 |         参数数量         |   占比  |
++-------+--------------------------+---------+
+| model | 596,049,920 (1136.88 MB) | 100.00% |
+|  总计 | 596,049,920 (1136.88 MB) | 100.00% |
++-------+--------------------------+---------+
+
+=== 模型层次结构 ===
+└── Qwen3ForCausalLM
+    ├── Qwen3Model
+    │   ├── Embedding
+    │   ├── ModuleList
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   ├── Qwen3DecoderLayer
+    │   │   │   ├── Qwen3Attention
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Qwen3RMSNorm
+    │   │   │   │   └── Qwen3RMSNorm
+    │   │   │   ├── Qwen3MLP
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   ├── Linear
+    │   │   │   │   └── SiLU
+    │   │   │   ├── Qwen3RMSNorm
+    │   │   │   └── Qwen3RMSNorm
+    │   │   └── Qwen3DecoderLayer
+    │   │       ├── Qwen3Attention
+    │   │       │   ├── Linear
+    │   │       │   ├── Linear
+    │   │       │   ├── Linear
+    │   │       │   ├── Linear
+    │   │       │   ├── Qwen3RMSNorm
+    │   │       │   └── Qwen3RMSNorm
+    │   │       ├── Qwen3MLP
+    │   │       │   ├── Linear
+    │   │       │   ├── Linear
+    │   │       │   ├── Linear
+    │   │       │   └── SiLU
+    │   │       ├── Qwen3RMSNorm
+    │   │       └── Qwen3RMSNorm
+    │   ├── Qwen3RMSNorm
+    │   └── Qwen3RotaryEmbedding
+    └── Linear
+
+=== 每层详细信息 ===
+共有 28 个Decoder层
++--------+-----------------------------------------------------------+------------+------------------------------------+------------------------------------+
+| 层索引 |                            组件                           |  参数数量  |              输入形状              |              输出形状              |
++--------+-----------------------------------------------------------+------------+------------------------------------+------------------------------------+
+|   0    | self_attn, mlp, input_layernorm, post_attention_layernorm | 15,730,944 | [batch_size, seq_len, hidden_size] | [batch_size, seq_len, hidden_size] |
+|   1    | self_attn, mlp, input_layernorm, post_attention_layernorm | 15,730,944 | [batch_size, seq_len, hidden_size] | [batch_size, seq_len, hidden_size] |
+|   2    | self_attn, mlp, input_layernorm, post_attention_layernorm | 15,730,944 | [batch_size, seq_len, hidden_size] | [batch_size, seq_len, hidden_size] |
+|  ...3  | self_attn, mlp, input_layernorm, post_attention_layernorm | 15,730,944 | [batch_size, seq_len, hidden_size] | [batch_size, seq_len, hidden_size] |
+|  ...4  | self_attn, mlp, input_layernorm, post_attention_layernorm | 15,730,944 | [batch_size, seq_len, hidden_size] | [batch_size, seq_len, hidden_size] |
+|  ...5  | self_attn, mlp, input_layernorm, post_attention_layernorm | 15,730,944 | [batch_size, seq_len, hidden_size] | [batch_size, seq_len, hidden_size] |
++--------+-----------------------------------------------------------+------------+------------------------------------+------------------------------------+
+
+=== KV缓存分析 ===
+找到 56 个注意力层
++-----------------------------------------------+----------------+------+--------+--------+
+|                      路径                     |      类型      | 头数 | KV头数 | 头维度 |
++-----------------------------------------------+----------------+------+--------+--------+
+|         model.model.layers.0.self_attn        | Qwen3Attention | N/A  |  N/A   |  128   |
+| model.model.layers.0.post_attention_layernorm |  Qwen3RMSNorm  | N/A  |  N/A   |  N/A   |
+|         model.model.layers.1.self_attn        | Qwen3Attention | N/A  |  N/A   |  128   |
+| model.model.layers.1.post_attention_layernorm |  Qwen3RMSNorm  | N/A  |  N/A   |  N/A   |
+|         model.model.layers.2.self_attn        | Qwen3Attention | N/A  |  N/A   |  128   |
++-----------------------------------------------+----------------+------+--------+--------+
+
+KV缓存工作机制:
+1. Qwen3模型使用多头注意力机制，通常采用分组查询注意力(GQA)
+2. KV缓存用于存储先前计算的键和值，避免重复计算
+3. 在自回归生成过程中，只需要计算当前token的查询(Q)，然后与历史KV缓存进行注意力计算
+4. 缓存大小与序列长度、头数和头维度成正比
+
+模型信息已保存到: qwen3_model_structure_info.txt
+
+=== 推理测试 ===
+提示词: 你好，我是
+生成结果: 你好，我是想做自媒体账号，想写一个关于如何成为成功自媒体账号的自媒体，这个账号的
+
+模型分析完成！

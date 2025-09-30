@@ -10,6 +10,24 @@ from nanovllm.layers.linear import QKVParallelLinear, MergedColumnParallelLinear
 from nanovllm.layers.rotary_embedding import get_rope
 from nanovllm.layers.embed_head import VocabParallelEmbedding, ParallelLMHead
 
+"""
+此文件自定义了Qwen3模型的结构
+# 注意力机制层
+def Qwen3Attention(nn.Module):
+    # 包含多头注意力的实现
+# MLP层
+class Qwen3MLP(nn.Module):
+    # 包含前馈网络的实现
+# 解码器层
+class Qwen3DecoderLayer(nn.Module):
+    # 组合注意力层和MLP层
+# 完整模型主体
+class Qwen3Model(nn.Module):
+    # 包含词嵌入层和多层解码器
+# 带语言建模头的完整模型
+class Qwen3ForCausalLM(nn.Module):
+    # 组合模型主体和语言建模头
+"""
 
 class Qwen3Attention(nn.Module):
 

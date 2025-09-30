@@ -111,12 +111,21 @@ class ModelRunner:
         hf_config = config.hf_config
         free, total = torch.cuda.mem_get_info()  # 查询当前GPU的空闲和总显存
         used = total - free  # 实际已用显存
-        peak = torch.cuda.memory_stats()["allocated_bytes.all.peak"]  # 历史分配过的显存峰值
-        current = torch.cuda.memory_stats()["allocated_bytes.all.current"]  # 当前分配的显存
+        peak = torch.cuda.memory_stats()["allocated_bytes.all.peak"]  # 当前pytorch程序启动以来，历史分配过的显存峰值
+        current = torch.cuda.memory_stats()["allocated_bytes.all.current"]  # 当前pytorch程序已分配的显存
         num_kv_heads = hf_config.num_key_value_heads // self.world_size  # 每个进程分到的KV头数，用于TP并行
         # 计算每个KV缓存块的字节数（2表示k和v，层数*块数*块大小*头数*每头维度*数据类型字节数）
+        # 注意： 这里的block_bytes是每个KV缓存块的字节数，包含整个KV缓存块在模型层面上一整块的大小，
+        # 而不是每个KV缓存块的k和v的大小，每个KV缓存块的k和v的大小是block_size*头数*头维度*数据类型字节数
         block_bytes = 2 * hf_config.num_hidden_layers * self.block_size * num_kv_heads * hf_config.head_dim * hf_config.torch_dtype.itemsize
-        # 计算可用的KV缓存块数量（考虑显存利用率、已用、峰值、当前分配等）
+        # 计算可用的KV缓存块数量（考虑显存利用率、已用、峰值、当前分配等） 
+        # 公式：总显存 * 显存利用率 - 已用显存 - 当前程序历史峰值显存 + 当前程序已分配显存 = 可用显存
+        # 再除以每个KV缓存块的字节数，得到可用的块数，这里used是GPU设备层面的，peak和current是当前程序的显存使用情况
+        # 这个公式的本质是：
+        # 1.首先计算理论上可以使用的最大显存（total * config.gpu_memory_utilization）
+        # 2.然后减去系统已使用的显存和历史峰值（- used - peak），确保有足够的安全余量
+        # 3.最后加上当前实际分配的显存（+ current），避免过度预留
+        # 这种设计平衡了性能优化和系统稳定性，能够在不同的硬件环境和工作负载下自动调整 KV 缓存的大小，最大化利用可用显存的同时避免显存溢出。
         config.num_kvcache_blocks = int(total * config.gpu_memory_utilization - used - peak + current) // block_bytes
         assert config.num_kvcache_blocks > 0  # 至少要有一个块
         # 分配KV缓存张量，形状为[2, 层数, 块数, 块大小, 头数, 头维度]
@@ -125,8 +134,12 @@ class ModelRunner:
             self.block_size, num_kv_heads, hf_config.head_dim
         )
         layer_id = 0
-        # 遍历模型的所有子模块，将分配好的KV缓存绑定到每一层
+        # 遍历模型的所有子模块，将分配好的KV缓存绑定到每一层的Attention模块
+        # self.model.modules() 是一个生成器，返回模型的所有子模块，包括层、层的子模块等
+        # modules()方法是nn.Module类的一个方法，这里的model继承自nn.Module，所以可以调用modules()方法
+        # print(list(self.model.modules()))
         for module in self.model.modules():
+            # 这里是Attention模块的元素，在这里进行绑定
             if hasattr(module, "k_cache") and hasattr(module, "v_cache"):
                 module.k_cache = self.kv_cache[0, layer_id]  # 绑定K缓存
                 module.v_cache = self.kv_cache[1, layer_id]  # 绑定V缓存

@@ -78,7 +78,10 @@ class LLMEngine:
         """
         if isinstance(prompt, str):
             prompt = self.tokenizer.encode(prompt)
+        # 将encode之后的prompt构建成Sequence对象，加入调度队列
+        # 初始化的Sequence对象，为Waiting状态
         seq = Sequence(prompt, sampling_params)
+        # 加入scheduler的Waiting队列
         self.scheduler.add(seq)
 
     def step(self):
@@ -115,12 +118,20 @@ class LLMEngine:
         # 如果sampling_params不是列表，则扩展为与prompts等长的列表
         if not isinstance(sampling_params, list):
             sampling_params = [sampling_params] * len(prompts)
-        # 添加所有请求到调度器
+        """
+        添加所有请求到调度器的waiting队列中，每一个prompt封装成一个Sequence对象
+        这段代码使用了Python中的 并行迭代 语法，主要包含以下几个关键点：
+        1.zip() 函数 ：用于将两个（或多个）可迭代对象（如列表、元组等）中对应的元素配对，
+                创建一个迭代器，返回一系列元组。
+        2.多重赋值 ：在循环变量中使用了 prompt, sp 的形式，这是Python的多重赋值语法，
+                它会自动将 zip() 返回的元组解包，分别赋值给 prompt 和 sp 变量。
+        """
         for prompt, sp in zip(prompts, sampling_params):
             self.add_request(prompt, sp)
         outputs = {}
         prefill_throughput = decode_throughput = 0.
         # 主推理循环，直到所有序列完成
+        # is_finished检查所有waiting和running队列是否为空
         while not self.is_finished(): # 是否结束由调度器判断
             t = perf_counter()# 高精度计时
             output, num_tokens = self.step()
