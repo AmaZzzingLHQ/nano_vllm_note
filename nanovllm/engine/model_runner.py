@@ -32,7 +32,7 @@ class ModelRunner:
         self.model = Qwen3ForCausalLM(hf_config)  # 构建模型
         load_model(self.model, config.model)  # 加载权重
         self.sampler = Sampler()  # 构建采样器
-        self.warmup_model()  # 预热模型，用尽量大的batch和token计算一次
+        # self.warmup_model()  # 预热模型，用尽量大的batch和token计算一次
         self.allocate_kv_cache()  # 分配KV缓存，计算可用的KV缓存块数量，并且绑定到每个层的k和v
         if not self.enforce_eager:
             self.capture_cudagraph()  # 捕获CUDA图以加速推理，原理是预先加载了计算图，但是要预存计算图会占用部分的显存
@@ -165,27 +165,27 @@ class ModelRunner:
 
         for seq in seqs:
             seqlen = len(seq)  # 当前序列的总长度
-            # 取出本轮需要推理的 token id（未缓存部分）
+            # 取出本轮需要推理的 token id（未缓存部分） 最终将所有序列的 token id 拼接起来
             input_ids.extend(seq[seq.num_cached_tokens:])
-            # 生成这些 token 的位置信息
+            # 生成这些 token 的位置信息 最终将所有序列的位置信息拼接起来
             positions.extend(list(range(seq.num_cached_tokens, seqlen)))
             # 计算 query 和 key 的长度
             seqlen_q = seqlen - seq.num_cached_tokens  # 本轮需要推理的 token 数
             seqlen_k = seqlen                          # 当前序列的总长度
-            cu_seqlens_q.append(cu_seqlens_q[-1] + seqlen_q)  # 更新 query 前缀和
-            cu_seqlens_k.append(cu_seqlens_k[-1] + seqlen_k)  # 更新 key 前缀和
+            cu_seqlens_q.append(cu_seqlens_q[-1] + seqlen_q)  # 更新 query 前缀和 比如两个序列，长度分别为11, 17 那么cu_seqlens_q 就是 [0, 11, 28]
+            cu_seqlens_k.append(cu_seqlens_k[-1] + seqlen_k)  # 更新 key 前缀和 同上
             max_seqlen_q = max(seqlen_q, max_seqlen_q)        # 更新最大 query 长度
             max_seqlen_k = max(seqlen_k, max_seqlen_k)        # 更新最大 key 长度
             if not seq.block_table:
                 continue  # 如果没有 block_table，跳过后续 slot_mapping 处理
-            # 遍历本轮需要写入 KV cache 的 block
+            # 遍历本轮需要写入 KV cache 的 block 从已经cache缓存的之后 到 总共的
             for i in range(seq.num_cached_blocks, seq.num_blocks):
-                start = seq.block_table[i] * self.block_size
+                start = seq.block_table[i] * self.block_size # start 是当前 block 在 KV cache 中的起始位置
                 if i != seq.num_blocks - 1:
                     end = start + self.block_size
                 else:
                     end = start + seq.last_block_num_tokens  # 最后一个 block 可能不满
-                slot_mapping.extend(list(range(start, end)))  # 记录每个 token 的物理位置
+                slot_mapping.extend(list(range(start, end)))  # 记录每个 token 的物理位置 比如两个block，每个block 3个token，slot_mapping 就是 [0,1,2,256,257,258]
 
         # 如果有 prefix cache（key 比 query 多），需要准备 block_tables
         if cu_seqlens_k[-1] > cu_seqlens_q[-1]:
@@ -198,7 +198,7 @@ class ModelRunner:
         cu_seqlens_k = torch.tensor(cu_seqlens_k, dtype=torch.int32, pin_memory=True).cuda(non_blocking=True)
         slot_mapping = torch.tensor(slot_mapping, dtype=torch.int32, pin_memory=True).cuda(non_blocking=True)
 
-        # 设置推理上下文，包括 cu_seqlens、slot_mapping、block_tables 等
+        # 设置推理上下文_CONTEXT，包括 cu_seqlens、slot_mapping、block_tables 等 _CONTEXT是一个全局变量 为当前推理上下文
         set_context(True, cu_seqlens_q, cu_seqlens_k, max_seqlen_q, max_seqlen_k, slot_mapping, None, block_tables)
         return input_ids, positions  # 返回模型推理所需的 input_ids 和 positions
 

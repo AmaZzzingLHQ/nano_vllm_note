@@ -29,8 +29,10 @@ class BlockManager:
     BlockManager 负责管理 KV 缓存中的 block 单元，实现 block 的分配、回收、哈希查找和缓存复用。
     支持高效的 KV cache 复用和 LLM 推理中的缓存管理。
     """
-    #  num_blocks 是根据实际的显存大小在Model_runner->allocate_kv_cache初始化时计算到的（4060 16G算出来 447）
-    #  block_size 是每个 block 可以存储的 token 数，config中定的 当前是 256
+    #  num_blocks 是根据实际的显存大小在Model_runner->allocate_kv_cache初始化时计算到的（4060 16G算出来 447） 
+    #  一个block的含义是涵盖整个网络所需的block_size大小的KV缓存空间 
+    #  大小为 2 * hf_config.num_hidden_layers * self.block_size * num_kv_heads * hf_config.head_dim * hf_config.torch_dtype.itemsize
+    #  block_size 是每个 block 可以存储的 token 数，config中定的 当前是 256 
     def __init__(self, num_blocks: int, block_size: int):
         assert num_blocks > 0
         self.block_size = block_size  # 每个 block 的 token 数
@@ -76,6 +78,7 @@ class BlockManager:
             token_ids = seq.block(i)
             h = self.compute_hash(token_ids, h) if len(token_ids) == self.block_size else -1
             block_id = self.hash_to_block_id.get(h, -1)
+            # block_id ！= -1时还是要判断一下token_ids是否匹配，因为hash_to_block_id是根据h计算出来的，可能会有hash冲突
             if block_id == -1 or self.blocks[block_id].token_ids != token_ids:
                 cache_miss = True  # 没有命中缓存，需要新分配
             if cache_miss:
@@ -83,6 +86,11 @@ class BlockManager:
                 block = self._allocate_block(block_id)
             else:
                 seq.num_cached_tokens += self.block_size
+                # 没有cache miss，也要判断一下block_id是否在used_block_ids中，
+                # 因为可能hash存在，但是block已经被清理了
+                # allocate 里面关于 hash_to_block_id的判断都要检查一下
+                # 因为整个过程中其实没有针对 hash_to_block_id 的清理操作，所以运行久了里面会有过期的hash
+                # 这样功能是没有问题的，hash_to_block_id的内存增长有限，不会导致严重的内存问题
                 if block_id in self.used_block_ids:
                     block = self.blocks[block_id]
                     block.ref_count += 1  # 复用已分配的 block
@@ -124,7 +132,7 @@ class BlockManager:
             assert last_block.hash == -1       # 当前 block 还没有 hash（未完成）
             token_ids = seq.block(seq.num_blocks-1)  # 取当前 block 的 token id
             prefix = self.blocks[block_table[-2]].hash if len(block_table) > 1 else -1  # 上一个 block 的 hash
-            h = self.compute_hash(token_ids, prefix)  # 计算 hash
+            h = self.compute_hash(token_ids, prefix)  # 计算 hash ， 附带上一个block的hash
             last_block.update(h, token_ids)           # 更新 block 的 hash 和内容
             self.hash_to_block_id[h] = last_block.block_id  # 注册到哈希表
 
