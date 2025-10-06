@@ -85,7 +85,7 @@ class BlockManager:
                 block_id = self.free_block_ids[0]
                 block = self._allocate_block(block_id)
             else:
-                seq.num_cached_tokens += self.block_size
+                
                 # 没有cache miss，也要判断一下block_id是否在used_block_ids中，
                 # 因为可能hash存在，但是block已经被清理了
                 # allocate 里面关于 hash_to_block_id的判断都要检查一下
@@ -94,6 +94,8 @@ class BlockManager:
                 if block_id in self.used_block_ids:
                     block = self.blocks[block_id]
                     block.ref_count += 1  # 复用已分配的 block
+                    # bugfix 在block_id在used_block_ids中时，才累加num_cached_tokens，因为这里才是真正复用缓存了
+                    seq.num_cached_tokens += self.block_size 
                 else:
                     block = self._allocate_block(block_id)
             if h != -1:
