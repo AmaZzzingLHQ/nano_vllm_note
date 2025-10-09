@@ -85,19 +85,22 @@ class BlockManager:
                 block_id = self.free_block_ids[0]
                 block = self._allocate_block(block_id)
             else:
-                
-                # 没有cache miss，也要判断一下block_id是否在used_block_ids中，
-                # 因为可能hash存在，但是block已经被清理了
+                # cache_miss为false，即可以使用缓存
+                seq.num_cached_tokens += self.block_size # num_cached_tokens增加
                 # allocate 里面关于 hash_to_block_id的判断都要检查一下
                 # 因为整个过程中其实没有针对 hash_to_block_id 的清理操作，所以运行久了里面会有过期的hash
                 # 这样功能是没有问题的，hash_to_block_id的内存增长有限，不会导致严重的内存问题
+
+                # block_id 在 used_block_ids，直接指向对应block，引用计数+1
                 if block_id in self.used_block_ids:
                     block = self.blocks[block_id]
-                    block.ref_count += 1  # 复用已分配的 block
-                    # bugfix 在block_id在used_block_ids中时，才累加num_cached_tokens，因为这里才是真正复用缓存了
-                    seq.num_cached_tokens += self.block_size 
+                    block.ref_count += 1  # 复用已分配的 block 
+                # block_id 不在 used_block_ids，即block清理了，在free_block_ids中，但是也能复用
+                # 1. block的回收_deallocate_block并没有清除token_ids，只是重置了ref_count引用计数。且hash_to_block_id并不会清理。
+                # 2. 所以哪怕是deallocate的block，也可以通过上面cache_miss的判断
+                # 3. block token_ids的清理是在_allocate_block 分配的时候调用 reset 方法
                 else:
-                    block = self._allocate_block(block_id)
+                    block = self._allocate_block(block_id) # _allocate_block重新分配，token_ids和hash没了，但是马上下面的update会重新赋值
             if h != -1:
                 block.update(h, token_ids)
                 self.hash_to_block_id[h] = block_id

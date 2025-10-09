@@ -50,7 +50,7 @@ class Scheduler:
         while self.waiting and num_seqs < self.max_num_seqs:
             seq = self.waiting[0]  # 取队首序列
             # 判断token数和KV块是否足够
-            if num_batched_tokens + len(seq) > self.max_num_batched_tokens or not self.block_manager.can_allocate(seq):
+            if num_batched_tokens + len(seq) > self.max_num_batched_tokens or not self.block_manager.can_allocate(seq): # can_allocate prefill阶段的检查，用于判断是否有足够的空闲KV缓存块供初始化
                 break  # 超出限制则停止调度
             num_seqs += 1
             self.block_manager.allocate(seq)  # 分配KV缓存块
@@ -68,11 +68,13 @@ class Scheduler:
         while self.running and num_seqs < self.max_num_seqs:
             seq = self.running.popleft()  # 取出一个运行中的序列
             # 如果KV块不足，抢占其他序列
-            while not self.block_manager.can_append(seq):
+            # while-else 含义为循环正常结束就会到else中，在这里就是循环到can_append满足了，就进入else中
+            # 如果将seq自己抢占了，就直接break，不会进入else的调度逻辑中
+            while not self.block_manager.can_append(seq): # can_append decode阶段的检查，用于追加下一个token判断
                 if self.running:
                     self.preempt(self.running.pop())  # 抢占并回收最后一个序列的资源
                 else:
-                    self.preempt(seq)  # 如果只剩当前序列，也要抢占
+                    self.preempt(seq)  # 如果只剩当前序列，也要抢占，抢占完了执行break，不会走下面else的调度逻辑
                     break
             else:
                 num_seqs += 1
@@ -87,6 +89,7 @@ class Scheduler:
     def preempt(self, seq: Sequence):
         """
         抢占一个序列，将其状态设为WAITING并回收KV块，重新加入等待队列。
+        需要注意，这里只是释放了KV缓存块，token_ids没有清空，这会保存已生成的token_ids，然后重新prefill一遍，和完全重新从prompt开始是不同的。
         """
         seq.status = SequenceStatus.WAITING
         self.block_manager.deallocate(seq)

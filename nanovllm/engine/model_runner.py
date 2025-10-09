@@ -101,8 +101,8 @@ class ModelRunner:
         torch.cuda.reset_peak_memory_stats() # 重置CUDA的显存峰值统计，便于后续准确监控显存使用峰值
         max_num_batched_tokens, max_model_len = self.config.max_num_batched_tokens, self.config.max_model_len
         num_seqs = min(max_num_batched_tokens // max_model_len, self.config.max_num_seqs)
-        seqs = [Sequence([0] * max_model_len) for _ in range(num_seqs)]  # 构造填充序列
-        self.run(seqs, True)  # 运行一次prefill
+        seqs = [Sequence([0] * max_model_len) for _ in range(num_seqs)]  # 构造填充序列，内容全是0
+        self.run(seqs, True)  # 运行一次prefill，True代表是prefill
         torch.cuda.empty_cache()
 
     def allocate_kv_cache(self):
@@ -176,8 +176,12 @@ class ModelRunner:
             cu_seqlens_k.append(cu_seqlens_k[-1] + seqlen_k)  # 更新 key 前缀和 同上
             max_seqlen_q = max(seqlen_q, max_seqlen_q)        # 更新最大 query 长度
             max_seqlen_k = max(seqlen_k, max_seqlen_k)        # 更新最大 key 长度
+            # 没有block_table 的情况是 warmup_model 时，不会用scheduler进行调度，那也就不会有kv block
+            # 也就没有block_table ，所以这里跳过，不进行slot_mapping 处理，但是其他的信息还是要更新的
+            # 没有block_table也是正常进行推理的，后续attention计算中调用flash_attn_varlen_func进行计算
+            # warmup_model 相当于是进行了一次最大化num seq的prefill操作
             if not seq.block_table:
-                continue  # 如果没有 block_table，跳过后续 slot_mapping 处理
+                continue  # 如果没有 block_table，跳过后续 slot_mapping 处理，slot_mapping 是atten时store_kvcache时需要的kv存储位置，warmup的时候不需要，正常情况需要
             # 遍历本轮需要写入 KV cache 的 block 从已经cache缓存的之后 到 总共的
             for i in range(seq.num_cached_blocks, seq.num_blocks):
                 start = seq.block_table[i] * self.block_size # start 是当前 block 在 KV cache 中的起始位置
@@ -204,6 +208,12 @@ class ModelRunner:
 
     def prepare_decode(self, seqs: list[Sequence]):
         # 构造decode阶段的输入
+        # 与prefill不同，这里只需要最后一个token，以及它的位置，以及它在kv cache中的位置
+        # 比如这里，prefill为两个序列长度分别为11，17，在第一次decode时:
+        # context_lens [12, 18] 
+        # input_ids [151667, 151667]  151667代表标记<think>，定义在tokenizer.json和tokenizer_config.json中
+        # positions [12, 18]
+        # slot_mapping [11, 273]
         input_ids = []
         positions = []
         slot_mapping = []
@@ -217,7 +227,7 @@ class ModelRunner:
         positions = torch.tensor(positions, dtype=torch.int64, pin_memory=True).cuda(non_blocking=True)
         slot_mapping = torch.tensor(slot_mapping, dtype=torch.int32, pin_memory=True).cuda(non_blocking=True)
         context_lens = torch.tensor(context_lens, dtype=torch.int32, pin_memory=True).cuda(non_blocking=True)
-        block_tables = self.prepare_block_tables(seqs)
+        block_tables = self.prepare_block_tables(seqs) # decode阶段都要block_tables
         set_context(False, slot_mapping=slot_mapping, context_lens=context_lens, block_tables=block_tables)
         return input_ids, positions
 
